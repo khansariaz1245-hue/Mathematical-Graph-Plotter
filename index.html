@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematical Graph Plotter | Interactive Coordinate Plane</title>
+  <meta name="description" content="A complete, professional, and interactive Mathematical Graph Plotter. Plot linear, quadratic, cubic, trigonometric, square root, exponential, and absolute value functions with live coordinate inspection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="12" y1="3" x2="12" y2="21"></line>
+            <path d="M4 17c3-7 6-7 8 0s5 7 8 0"></path>
+          </svg>
+        </div>
+        <div class="title-group">
+          <h1 class="app-title">Mathematical Graph Plotter</h1>
+          <span class="badge-edu">Educational Edition</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Presets Dropdown Button -->
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" id="btnPresetsMenu" title="Load sample mathematical equations">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Preset Functions</span>
+          </button>
+          <div class="dropdown-menu" id="presetsDropdown">
+            <div class="dropdown-header">Choose an educational function</div>
+            <div class="dropdown-group-label">Linear & Polynomial</div>
+            <button class="dropdown-item" data-preset="2x + 1">Linear: y = 2x + 1</button>
+            <button class="dropdown-item" data-preset="x^2">Quadratic: y = x²</button>
+            <button class="dropdown-item" data-preset="x^2 - 4">Parabola (Roots at ±2): y = x² - 4</button>
+            <button class="dropdown-item" data-preset="x^3">Cubic: y = x³</button>
+            <button class="dropdown-item" data-preset="x^3 - 3x">Cubic Wave: y = x³ - 3x</button>
+            
+            <div class="dropdown-group-label">Radical & Absolute Value</div>
+            <button class="dropdown-item" data-preset="sqrt(x)">Square Root: y = √x</button>
+            <button class="dropdown-item" data-preset="abs(x)">Absolute Value: y = |x|</button>
+            <button class="dropdown-item" data-preset="abs(x^2 - 4)">Bouncing Parabola: y = |x² - 4|</button>
+
+            <div class="dropdown-group-label">Trigonometric Functions</div>
+            <button class="dropdown-item" data-preset="sin(x)">Sine: y = sin(x)</button>
+            <button class="dropdown-item" data-preset="cos(x)">Cosine: y = cos(x)</button>
+            <button class="dropdown-item" data-preset="tan(x)">Tangent: y = tan(x)</button>
+            <button class="dropdown-item" data-preset="sin(2x) * cos(x)">Harmonic: y = sin(2x)cos(x)</button>
+
+            <div class="dropdown-group-label">Exponential & Logarithmic</div>
+            <button class="dropdown-item" data-preset="2^x">Exponential: y = 2^x</button>
+            <button class="dropdown-item" data-preset="exp(x)">Natural Exp: y = e^x</button>
+            <button class="dropdown-item" data-preset="log(x)">Natural Log: y = ln(x)</button>
+            <button class="dropdown-item" data-preset="1/x">Hyperbola: y = 1/x</button>
+          </div>
+        </div>
+
+        <!-- Table of Values Modal Toggle -->
+        <button class="btn btn-secondary" id="btnOpenTable" title="View Table of Values (x vs y)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="3" y1="15" x2="21" y2="15"></line>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+          <span>Table of Values</span>
+        </button>
+
+        <!-- Tangent Line Inspector Toggle -->
+        <button class="btn btn-secondary" id="btnToggleTangent" title="Toggle tangent line & derivative preview at cursor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 20 L20 4"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="tangentStatusText">Tangent: Off</span>
+        </button>
+
+        <!-- Export PNG -->
+        <button class="btn btn-secondary" id="btnExportImage" title="Download graph image (PNG)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Export</span>
+        </button>
+
+        <!-- Help Guide -->
+        <button class="btn btn-icon" id="btnOpenHelp" title="Mathematical Syntax Guide & Help">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+
+        <!-- Dark/Light Mode Toggle -->
+        <button class="btn btn-icon" id="btnThemeToggle" title="Toggle Dark/Light Mode">
+          <svg id="themeIconSun" class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <div class="workspace">
+      <!-- Left Sidebar: Equation Input & Controls -->
+      <aside class="sidebar" id="sidebarPanel">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+          <div class="sidebar-title-row">
+            <h2>Equations (f(x))</h2>
+            <span class="count-pill" id="equationCountBadge">1 active</span>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnAddEquation" title="Add another equation to plot multiple graphs">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Equation</span>
+          </button>
+        </div>
+
+        <!-- Scrollable Equation List -->
+        <div class="equations-list" id="equationsContainer">
+          <!-- Dynamically populated equation cards -->
+        </div>
+
+        <!-- Quick Math Keypad for Easy Student Input -->
+        <div class="math-keypad-panel">
+          <div class="keypad-header">
+            <span>Quick Math Insert</span>
+            <button class="text-btn" id="btnToggleKeypad">Hide</button>
+          </div>
+          <div class="keypad-grid" id="keypadGrid">
+            <button class="key-btn" data-insert="x">x</button>
+            <button class="key-btn" data-insert="^2" title="Square (x²)">x²</button>
+            <button class="key-btn" data-insert="^3" title="Cube (x³)">x³</button>
+            <button class="key-btn" data-insert="^" title="Power (xⁿ)">xⁿ</button>
+            <button class="key-btn" data-insert="sqrt(" title="Square Root (√x)">√</button>
+            <button class="key-btn" data-insert="abs(" title="Absolute Value (|x|)">|x|</button>
+            
+            <button class="key-btn" data-insert="sin(">sin</button>
+            <button class="key-btn" data-insert="cos(">cos</button>
+            <button class="key-btn" data-insert="tan(">tan</button>
+            <button class="key-btn" data-insert="exp(">eˣ</button>
+            <button class="key-btn" data-insert="log(">ln</button>
+            <button class="key-btn" data-insert="pi">π</button>
+
+            <button class="key-btn" data-insert="+">+</button>
+            <button class="key-btn" data-insert="-">-</button>
+            <button class="key-btn" data-insert="*">×</button>
+            <button class="key-btn" data-insert="/">÷</button>
+            <button class="key-btn" data-insert="(">(</button>
+            <button class="key-btn" data-insert=")">)</button>
+          </div>
+        </div>
+
+        <!-- Primary Control Buttons Required -->
+        <div class="action-buttons-group">
+          <button class="btn btn-plot" id="btnPlotGraph" title="Re-evaluate and plot equations">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Plot Graph</span>
+          </button>
+          
+          <div class="secondary-actions-row">
+            <button class="btn btn-secondary" id="btnClearGraph" title="Clear all equations and canvas">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear Graph</span>
+            </button>
+            
+            <button class="btn btn-secondary" id="btnResetView" title="Reset coordinate plane to (0,0) and default scale">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+              </svg>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Viewport Range & Coordinates Information Accordion -->
+        <div class="sidebar-section">
+          <details class="accordion" id="viewSettingsAccordion">
+            <summary class="accordion-header">
+              <span>Coordinate Viewport & Grid Settings</span>
+              <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+            <div class="accordion-content">
+              <div class="range-inputs-grid">
+                <div class="form-group">
+                  <label for="inputXMin">X Min</label>
+                  <input type="number" id="inputXMin" step="any" value="-10">
+                </div>
+                <div class="form-group">
+                  <label for="inputXMax">X Max</label>
+                  <input type="number" id="inputXMax" step="any" value="10">
+                </div>
+                <div class="form-group">
+                  <label for="inputYMin">Y Min</label>
+                  <input type="number" id="inputYMin" step="any" value="-7">
+                </div>
+                <div class="form-group">
+                  <label for="inputYMax">Y Max</label>
+                  <input type="number" id="inputYMax" step="any" value="7">
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm full-width mt-2" id="btnApplyRanges">Apply Viewport Range</button>
+              
+              <div class="checkbox-group mt-3">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="chkShowGrid" checked>
+                  <span>Show Grid Lines</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="chkShowNumbers" checked>
+                  <span>Show Axis Numbers</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="chkDetectRoots" checked>
+                  <span>Highlight Roots & Intercepts</span>
+                </label>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Educational Quick Tips -->
+        <div class="student-tip-card">
+          <div class="tip-icon">💡</div>
+          <div class="tip-body">
+            <strong>Interactive Graphing Tips:</strong>
+            <p>• Click & drag anywhere on the canvas to pan.</p>
+            <p>• Scroll wheel or use +/- buttons to zoom.</p>
+            <p>• Hover over curves to inspect exact (x, y) coordinates.</p>
+            <p>• You can write: <code>2x+1</code>, <code>x²</code>, <code>sin(x)</code>, <code>√x</code>, or <code>|x|</code>.</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Main: Graph Canvas & Interactive Controls -->
+      <main class="canvas-wrapper">
+        <canvas id="graphCanvas"></canvas>
+
+        <!-- Floating Graph Canvas Controls (Zoom In, Zoom Out, Reset, Fullscreen) -->
+        <div class="floating-controls-cluster">
+          <button class="canvas-tool-btn" id="btnZoomIn" title="Zoom In (+)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button class="canvas-tool-btn" id="btnZoomOut" title="Zoom Out (-)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button class="canvas-tool-btn" id="btnCanvasReset" title="Center on Origin (0,0)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="12" y1="3" x2="12" y2="7"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+              <line x1="3" y1="12" x2="7" y2="12"></line>
+              <line x1="17" y1="12" x2="21" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Floating Active Legend on Canvas -->
+        <div class="floating-legend" id="canvasLegend">
+          <!-- Active equations chips will be listed here -->
+        </div>
+
+        <!-- Floating Live Inspector Badge (Coordinates & f(x) values) -->
+        <div class="floating-inspector" id="cursorInspector">
+          <div class="inspector-coord">
+            <span class="coord-label">Cursor:</span>
+            <span class="coord-val" id="cursorCoordVal">x: 0.00, y: 0.00</span>
+          </div>
+          <div class="inspector-funcs" id="cursorFuncsList">
+            <!-- Evaluated y values for each plotted function -->
+          </div>
+          <div class="inspector-tangent" id="cursorTangentInfo" style="display: none;">
+            <span class="tangent-badge">Slope m: <b id="tangentSlopeVal">0.00</b></span>
+          </div>
+        </div>
+
+        <!-- Intercept / Point Tooltip Popup on Canvas -->
+        <div class="canvas-tooltip" id="canvasPointTooltip"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Table of Values Modal -->
+  <div class="modal-backdrop" id="tableModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Table of Values (x vs y)</h3>
+          <p class="modal-sub">Compare values of all active mathematical functions</p>
+        </div>
+        <button class="modal-close-btn" id="btnCloseTableModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="table-controls-row">
+          <div class="form-group-inline">
+            <label for="tableStart">Start X:</label>
+            <input type="number" id="tableStart" value="-5" step="1">
+          </div>
+          <div class="form-group-inline">
+            <label for="tableEnd">End X:</label>
+            <input type="number" id="tableEnd" value="5" step="1">
+          </div>
+          <div class="form-group-inline">
+            <label for="tableStep">Step:</label>
+            <input type="number" id="tableStep" value="1" min="0.1" step="0.1">
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btnRefreshTable">Recalculate</button>
+        </div>
+
+        <div class="table-scroll-container">
+          <table class="math-table" id="valuesTable">
+            <thead>
+              <tr id="tableHeadRow">
+                <th>x</th>
+                <!-- Dynamically populated headers for each equation -->
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCopyTable">Copy to Clipboard</button>
+        <button class="btn btn-primary" id="btnCloseTableModalBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Syntax Guide Modal -->
+  <div class="modal-backdrop" id="helpModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Mathematical Syntax Guide</h3>
+          <p class="modal-sub">How to enter equations in the graph plotter</p>
+        </div>
+        <button class="modal-close-btn" id="btnCloseHelpModal">&times;</button>
+      </div>
+      <div class="modal-body guide-content">
+        <h4>Function Types & Examples</h4>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <div class="guide-badge">Linear</div>
+            <code>y = 2x + 1</code>
+            <p>Or <code>-0.5x + 3</code>, <code>x - 4</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Quadratic</div>
+            <code>y = x²</code> or <code>x^2 - 4</code>
+            <p>Supports superscripts like <code>x²</code> or <code>^2</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Cubic</div>
+            <code>y = x³</code> or <code>x^3 - 3x</code>
+            <p>Higher order polynomials like <code>x^4 - 2x^2</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Square Root</div>
+            <code>y = √x</code> or <code>sqrt(x)</code>
+            <p>Also <code>sqrt(16 - x^2)</code> or <code>cbrt(x)</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Exponential</div>
+            <code>y = 2^x</code> or <code>e^x</code>
+            <p>Use <code>exp(x)</code> for natural base <code>e</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Trigonometric</div>
+            <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>
+            <p>Angles in radians. Try <code>sin(2x)</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Absolute Value</div>
+            <code>|x|</code> or <code>abs(x)</code>
+            <p>E.g. <code>|x^2 - 4|</code> or <code>abs(x) - 2</code></p>
+          </div>
+          <div class="guide-card">
+            <div class="guide-badge">Logarithms & Constants</div>
+            <code>ln(x)</code>, <code>log(x)</code>, <code>pi</code>, <code>e</code>
+            <p>Constants: <code>π</code> or <code>pi</code>, Euler's <code>e</code></p>
+          </div>
+        </div>
+
+        <h4 class="mt-4">Smart Parser Features</h4>
+        <ul class="guide-list">
+          <li><strong>Implicit Multiplication:</strong> You can type <code>2x</code> instead of <code>2*x</code>, or <code>3(x+1)</code>, or <code>x sin(x)</code>.</li>
+          <li><strong>Prefixes:</strong> You can include <code>y = </code> or <code>f(x) = </code> or just write the expression directly like <code>x^2</code>.</li>
+          <li><strong>Discontinuity Handling:</strong> Functions like <code>tan(x)</code> or <code>1/x</code> will not draw false vertical connections across asymptotes!</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnCloseHelpModalBtn">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
